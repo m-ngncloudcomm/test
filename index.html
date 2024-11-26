@@ -91,12 +91,13 @@
   const popupHeader = document.getElementById('popup-header');
   const textarea = document.getElementById('noteTextarea');
 
+  // Restaurar la posición desde localStorage al cargar la página
   const savedPosition = localStorage.getItem('popupPosition');
   if (savedPosition) {
     const { top, left } = JSON.parse(savedPosition);
     popup.style.top = `${top}px`;
     popup.style.left = `${left}px`;
-    popup.style.transform = 'none'; 
+    popup.style.transform = 'none'; // Para evitar que se recoloque al centro
   }
 
   function openPopup() {
@@ -151,7 +152,8 @@
       popup.style.left = `${left}px`;
       popup.style.top = `${top}px`;
       popup.style.transform = 'none';
-      
+
+      // Guardar la posición en localStorage
       localStorage.setItem('popupPosition', JSON.stringify({ top, left }));
     }
   });
