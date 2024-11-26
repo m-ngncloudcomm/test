@@ -44,9 +44,6 @@
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
       cursor: grab;
-      span {
-        font-size: 13px;
-      }
     }
     .popup-header .close-btn {
       background: none;
@@ -54,7 +51,6 @@
       color: #fff;
       font-size: 16px;
       cursor: pointer;
-      margin-top: 0;
     }
     .popup-body {
       padding: 15px;
@@ -76,17 +72,6 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    textarea {
-      width: 300px; /* Ancho inicial */
-      height: 150px; /* Altura inicial */
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      resize: both; /* Permite el redimensionamiento horizontal y vertical */
-      overflow: auto; /* Muestra barras de desplazamiento si es necesario */
-      box-sizing: border-box; /* Asegura que el padding se incluya en las dimensiones totales */
-    }
-
   </style>
 </head>
 <body>
@@ -94,11 +79,11 @@
 <div class="popup" id="popup">
   <div class="popup-header" id="popup-header">
     <span>Grab note</span>
-    <button class="close-btn" onclick="closePopup()">&times;</button>
+    <button class="close-btn" onclick="closePopup()">X</button>
   </div>
   <div class="popup-body">
     <textarea id="noteTextarea" placeholder="Type something..."></textarea>
-    <button onclick="copyAndPaste()">Copy & Paste</button>
+    <button onclick="copyAndPaste()">Copy</button>
   </div>
 </div>
 <script>
@@ -106,11 +91,21 @@
   const popupHeader = document.getElementById('popup-header');
   const textarea = document.getElementById('noteTextarea');
 
+  const savedPosition = localStorage.getItem('popupPosition');
+  if (savedPosition) {
+    const { top, left } = JSON.parse(savedPosition);
+    popup.style.top = `${top}px`;
+    popup.style.left = `${left}px`;
+    popup.style.transform = 'none'; 
+  }
+
   function openPopup() {
     popup.style.display = 'block';
-    popup.style.top = '50%';
-    popup.style.left = '50%';
-    popup.style.transform = 'translate(-50%, -50%)';
+    if (!savedPosition) {
+      popup.style.top = '50%';
+      popup.style.left = '50%';
+      popup.style.transform = 'translate(-50%, -50%)';
+    }
   }
 
   function closePopup() {
@@ -133,7 +128,7 @@
       });
     }
   }
- 
+
   let isDragging = false;
   let offsetX = 0;
   let offsetY = 0;
@@ -150,9 +145,14 @@
 
   popupHeader.addEventListener('pointermove', (e) => {
     if (isDragging) {
-      popup.style.left = `${e.clientX - offsetX}px`;
-      popup.style.top = `${e.clientY - offsetY}px`;
+      const top = e.clientY - offsetY;
+      const left = e.clientX - offsetX;
+
+      popup.style.left = `${left}px`;
+      popup.style.top = `${top}px`;
       popup.style.transform = 'none';
+      
+      localStorage.setItem('popupPosition', JSON.stringify({ top, left }));
     }
   });
 
